@@ -1,0 +1,8 @@
+Manifest-version: 1.0
+Name: com/clocial/mydatafort/currency
+Specification-Title: KnowGate Currency Type
+Specification-Version: 9.0
+Specification-Vendor: Know Gate
+Implementation-Title: com..clocial.mydatafort.currency
+Implementation-Version: 9.0
+Implementation-Vendor: Know Gate
