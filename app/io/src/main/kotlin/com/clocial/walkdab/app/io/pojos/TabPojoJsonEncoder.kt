@@ -1,26 +1,30 @@
 package com.clocial.walkdab.app.io.pojos
 
 import com.clocial.walkdab.app.models.forms.Tab
-
 import com.clocial.walkdab.app.pojos.TabPojo
 import com.clocial.walkdab.app.util.json.CustomEncoder
+import java.time.LocalDateTime
 
 class TabPojoJsonEncoder: JsonEncoderPojo(), CustomEncoder.Encoder<TabPojo> {
 
     private val fieldEncoder: FieldPojoJsonEncoder = FieldPojoJsonEncoder()
 
-    override fun decode(nameValueMap: Map<String, Any>): Any {
+    override fun decode(nameValueMap: Map<String, Any>): TabPojo {
         val tab = TabPojo()
-        val tabFieldsList = nameValueMap.get("tabFields") as List<Map<String, Any>>
-        tabFieldsList.map { j -> fieldEncoder.decode(j) }.forEach{
+        val tabFieldsList = nameValueMap["tabFields"] as List<Map<String, Any>>
+        tabFieldsList.map { j -> fieldEncoder.decode(j) }.forEach {
             f -> tab.add(f)
         }
         nameValueMap.keys.forEach {
-            val keyVal = nameValueMap.get(it)
+            val keyVal = nameValueMap[it]
             when (it) {
                 "tabId" -> tab.setId(keyVal as String)
                 "tabName" -> keyVal?.let { it1 -> tab.setName(it1 as String) }
                 "formId" -> keyVal?.let { it1 -> tab.setFormId(it1 as String) }
+                "createdOn" -> keyVal?.let { it1 -> tab.setCreatedOn(LocalDateTime.parse(it1 as String)) }
+                "createdBy" -> keyVal?.let { it1 -> tab.setCreatedBy(it1 as String) }
+                "updatedOn" -> keyVal?.let { it1 -> tab.setUpdatedOn(LocalDateTime.parse(it1 as String)) }
+                "updatedBy" -> keyVal?.let { it1 -> tab.setUpdatedBy(it1 as String) }
             }
         }
         return tab

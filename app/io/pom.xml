@@ -178,6 +178,12 @@
     </dependency>
     <dependency>
       <groupId>com.clocial.walkdab.app</groupId>
+      <artifactId>walkdab-app-model</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <!-- <scope>test</scope> -->
+    </dependency>
+    <dependency>
+      <groupId>com.clocial.walkdab.app</groupId>
       <artifactId>walkdab-app-util</artifactId>
       <version>1.0-SNAPSHOT</version>
       <!-- <scope>test</scope> -->

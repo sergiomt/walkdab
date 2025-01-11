@@ -65,12 +65,11 @@ class AesCryptStatic {
         return if (a != 0 && b != 0) alog!![(log!![a and 255] + log!![b and 255]) % 255] else 0
     }
 
-    private fun mul4(a: Int, b: ByteArray): Int {
-        var a = a
-        if (a == 0) {
+    private fun mul4(i: Int, b: ByteArray): Int {
+        if (i == 0) {
             return 0
         } else {
-            a = log!![a and 255]
+            var a = log!![i and 255]
             val a0 = if (b[0].toInt() != 0) alog!![(a + log!![b[0].toInt() and 255]) % 255] and 255 else 0
             val a1 = if (b[1].toInt() != 0) alog!![(a + log!![b[1].toInt() and 255]) % 255] and 255 else 0
             val a2 = if (b[2].toInt() != 0) alog!![(a + log!![b[2].toInt() and 255]) % 255] and 255 else 0

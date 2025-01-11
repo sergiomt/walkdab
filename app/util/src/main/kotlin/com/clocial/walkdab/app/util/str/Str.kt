@@ -450,6 +450,21 @@ object Str {
 
     // ----------------------------------------------------------
 
+    /**
+     * Remove double quotes, carriage returns, line feeds, STX and ETX characters
+     */
+    fun sanitizeBreaks(value: String?): String {
+        return if (value.isNullOrEmpty()) {
+            ""
+        } else {
+            val noBreaks = removeChars(value, "\"\r" + FF + STX + ETX)
+            val noBreaksNonNull = noBreaks ?: ""
+            noBreaksNonNull.replace('\n', ' ')
+        }
+    }
+
+    // ----------------------------------------------------------
+
     private val two = 2
     private val three = 3
     private val twelve = 12

@@ -1,7 +1,12 @@
 package com.clocial.walkdab.app.io.pojos
 
-import com.clocial.walkdab.app.models.forms.Field
+import com.clocial.walkdab.app.models.forms.*
+import com.clocial.walkdab.app.models.snippets.Signature
 import com.clocial.walkdab.app.util.json.Encoder
+import com.clocial.walkdab.app.util.time.TimeHelper.formatCompactDate
+import com.clocial.walkdab.app.util.time.TimeHelper.formatCompactTimestamp
+
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 abstract class JsonEncoderPojo {
@@ -33,31 +38,74 @@ abstract class JsonEncoderPojo {
     }
 
     private fun encodeNameValue(builder: StringBuilder, fieldName: String, fieldValue: Any?) {
-        builder.append('"').append(fieldName).append('"').append(':')
         if (fieldValue==null) {
-            builder.append("null")
+            builder.append('"').append(fieldName).append('"').append(":null")
+        } else if (fieldValue is FieldValue) {
+            encodeNameValue(builder, fieldName, fieldValue.getValue())
         } else {
+            builder.append('"').append(fieldName).append('"').append(':')
             if (fieldValue is CharSequence) {
                 if (fieldValue.length==0)
                     builder.append('"').append('"')
                 else
-                    builder.append(Encoder.encode(builder, fieldValue))
+                    Encoder.encode(builder, fieldValue)
+                return
+            }
+            if (fieldValue is LocalDate) {
+                Encoder.encode(builder, formatCompactDate(fieldValue))
                 return
             }
             if (fieldValue is LocalDateTime) {
-                builder.append(Encoder.encode(builder, fieldValue))
+                Encoder.encode(builder, formatCompactTimestamp(fieldValue))
                 return
             }
             if (fieldValue is Boolean) {
-                builder.append(Encoder.encode(builder, fieldValue))
+                Encoder.encode(builder, fieldValue)
                 return
             }
-            if (fieldValue is List<*>) {
-                builder.append(Encoder.encode(builder, fieldValue))
+            if (fieldValue is Signature) {
+                Encoder.encode(builder, fieldValue.toString())
+                return
+            }
+            if (fieldValue is Set<*>) {
+                Encoder.encode(builder, fieldValue)
+                return
+            }
+            if (fieldValue is Collection<*>) {
+                if (fieldValue.all { i -> i is Field }) {
+                    builder.append(encodeFields(fieldValue as Collection<Field>))
+                } else if (fieldValue.all { i -> i is Tab }) {
+                    builder.append(encodeTabs(fieldValue as Collection<Tab>))
+                } else {
+                    encode(builder, fieldValue)
+                }
                 return
             }
             throw RuntimeException("Unsupported field type " + fieldValue.javaClass.simpleName)
         }
     }
 
+    private fun encodeFields(fieldValues: Collection<Field>): String {
+        val fieldEncoder = FieldPojoJsonEncoder()
+        val fieldBuilder = StringBuilder()
+        val fieldJsons = mutableListOf<String>()
+        for (f in fieldValues) {
+            fieldEncoder.encode(fieldBuilder, f)
+            fieldJsons.add(fieldBuilder.toString())
+            fieldBuilder.setLength(0)
+        }
+        return "[" + fieldJsons.joinToString() + "]"
+    }
+
+    private fun encodeTabs(tabValues: Collection<Tab>): String {
+        val fieldEncoder = TabPojoJsonEncoder()
+        val fieldBuilder = StringBuilder()
+        val fieldJsons = mutableListOf<String>()
+        for (t in tabValues) {
+            fieldEncoder.encode(fieldBuilder, t)
+            fieldJsons.add(fieldBuilder.toString())
+            fieldBuilder.setLength(0)
+        }
+        return "[" + fieldJsons.joinToString() + "]"
+    }
 }

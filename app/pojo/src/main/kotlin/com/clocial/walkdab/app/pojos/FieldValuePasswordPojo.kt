@@ -7,6 +7,8 @@ import java.time.LocalTime
 
 import com.clocial.walkdab.app.encoding.BaseA64
 import com.clocial.walkdab.app.models.forms.FieldValuePassword
+import com.clocial.walkdab.app.util.time.TimeHelper.parseCompactTimestamp
+import com.clocial.walkdab.app.util.time.TimeHelper.formatCompactTimestamp
 
 class FieldValuePasswordPojo : FieldValuePassword, Serializable {
 
@@ -32,17 +34,28 @@ class FieldValuePasswordPojo : FieldValuePassword, Serializable {
     }
 
     override fun setValue(value: Any?) {
-        txPasswrd = if (null == value) "" else if (value is String) value else value.toString()
+        if (value == null) {
+            txPasswrd = ""
+            expiration = null
+        } else {
+            setFromString(value.toString())
+        }
     }
 
     override fun setFromString(strRepresentation: String?) {
         if (strRepresentation.isNullOrEmpty()) {
             txPasswrd = ""
+            expiration = null
         } else {
             val comma = strRepresentation.indexOf(';')
-            expiration = if (comma > 0) parseCompactTimestamp(strRepresentation.substring(comma)) else null
-            val encodedPsswrd = if (comma > 0) strRepresentation.substring(0, comma) else strRepresentation
-            txPasswrd = String(BaseA64.decode(encodedPsswrd.toCharArray()), Charsets.UTF_8)
+            if (comma==0) {
+                txPasswrd = ""
+                expiration = if (strRepresentation.length > 1) parseCompactTimestamp(strRepresentation.substring(1)) else null
+            } else {
+                expiration = if (comma > 0 && comma < strRepresentation.length - 1) parseCompactTimestamp(strRepresentation.substring(comma + 1)) else null
+                val encodedPsswrd = if (comma > 0) strRepresentation.substring(0, comma) else strRepresentation
+                txPasswrd = String(BaseA64.decode(encodedPsswrd.toCharArray()), Charsets.UTF_8)
+            }
         }
     }
 
@@ -70,21 +83,6 @@ class FieldValuePasswordPojo : FieldValuePassword, Serializable {
         return if (expiration==null) encodedPsswrd else encodedPsswrd + ";" + formatCompactTimestamp(expiration)
     }
 
-    private fun formatCompactTimestamp(dt: LocalDateTime?): String {
-        val ts = dt ?: LocalDateTime.now()
-        val sb = StringBuilder(14)
-        sb.append(ts.year.toString())
-        sb.append(ts.monthValue.toString())
-        sb.append(ts.dayOfMonth.toString())
-        sb.append(ts.hour.toString())
-        sb.append(ts.minute.toString())
-        sb.append(ts.second.toString())
-        return sb.toString()
-    }
 
-    private fun parseCompactTimestamp(st: String): LocalDateTime {
-        return LocalDateTime.of(st.substring(0,4).toInt(), st.substring(4,6).toInt(), st.substring(6,8).toInt(),
-            st.substring(8,10).toInt(), st.substring(10,12).toInt(), st.substring(12,14).toInt())
-    }
 
 }

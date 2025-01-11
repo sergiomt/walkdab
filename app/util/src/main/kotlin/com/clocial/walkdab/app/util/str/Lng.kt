@@ -12,14 +12,14 @@ object Lng {
         return toUnsignedString(i, 4)
     }
 
-    fun numberOfLeadingZeros(i: Long): Int {
-        val x: Int = (i ushr 32).toInt()
-        return if (x == 0) 32 + Integer.numberOfLeadingZeros(i.toInt())
+    fun numberOfLeadingZeros(n: Long): Int {
+        val x: Int = (n ushr 32).toInt()
+        return if (x == 0) 32 + Integer.numberOfLeadingZeros(n.toInt())
         else Integer.numberOfLeadingZeros(x)
     }
 
-    fun numberOfLeadingZeros(i: Int): Int {
-        var i = i
+    fun numberOfLeadingZeros(n: Int): Int {
+        var i = n
         if (i <= 0) return if (i == 0) 32 else 0
         var n = 31
         if (i >= 1 shl 16) {

@@ -29,22 +29,22 @@ internal abstract class MsgDigestSpiBase(
     }
 
     // single byte update. See JCA doc.
-    override fun engineUpdate(b: Byte) {
+    override fun engineUpdate(input: Byte) {
         if (oneByte == null) {
             oneByte = ByteArray(1)
         }
-        oneByte!!.set(0, b)
+        oneByte!![0] = input
         engineUpdate(oneByte!!, 0, 1)
     }
 
     // array update. See JCA doc.
-    override fun engineUpdate(b: ByteArray, ofs: Int, len: Int) {
-        var o = ofs
+    override fun engineUpdate(input: ByteArray, offset: Int, len: Int) {
+        var o = offset
         var l = len
         if (l == 0) {
             return
         }
-        if ((o < 0) || (l < 0) || (o > b.size - l)) {
+        if ((o < 0) || (l < 0) || (o > input.size - l)) {
             throw ArrayIndexOutOfBoundsException()
         }
         if (bytesProcessed < 0) {
@@ -54,7 +54,7 @@ internal abstract class MsgDigestSpiBase(
         // if buffer is not empty, we need to fill it before proceeding
         if (bufOfs != 0) {
             val n: Int = Math.min(l, blockSize - bufOfs)
-            System.arraycopy(b, o, buffer, bufOfs, n)
+            System.arraycopy(input, o, buffer, bufOfs, n)
             bufOfs += n
             o += n
             l -= n
@@ -67,12 +67,12 @@ internal abstract class MsgDigestSpiBase(
         // compress complete blocks
         if (l >= blockSize) {
             val limit = o + l
-            o = implCompressMultiBlock(b, o, limit - blockSize)
+            o = implCompressMultiBlock(input, o, limit - blockSize)
             l = limit - o
         }
         // copy remainder to buffer
         if (l > 0) {
-            System.arraycopy(b, o, buffer, 0, l)
+            System.arraycopy(input, o, buffer, 0, l)
             bufOfs = l
         }
     }
@@ -125,20 +125,17 @@ internal abstract class MsgDigestSpiBase(
         return b
     }
 
-    override fun engineDigest(out: ByteArray, ofs: Int, len: Int): Int {
+    override fun engineDigest(out: ByteArray, offset: Int, len: Int): Int {
         if (len < digestLength) {
-            throw IllegalArgumentException(
-                "Length must be at least "
-                        + digestLength + " for " + algorithm + "digests"
-            )
+            throw IllegalArgumentException("Length must be at least " + digestLength + " for " + algorithm + "digests")
         }
-        if ((ofs < 0) || (len < 0) || (ofs > out.size - len)) {
+        if ((offset < 0) || (len < 0) || (offset > out.size - len)) {
             throw ArrayIndexOutOfBoundsException("Buffer too short to store digest")
         }
         if (bytesProcessed < 0) {
             engineReset()
         }
-        implDigest(out, ofs)
+        implDigest(out, offset)
         bytesProcessed = -1
         return digestLength
     }
@@ -183,7 +180,7 @@ internal abstract class MsgDigestSpiBase(
         val padding: ByteArray = ByteArray(136)
 
         init {
-            padding.set(0, 0x80.toByte())
+            padding[0] = 0x80.toByte()
         }
     }
 }

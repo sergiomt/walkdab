@@ -67,12 +67,11 @@ class Uid {
      * @return String of 32 characters length
      */
     fun createUniqueKey(): String {
-        var iRnd: Int
         val lSeed = System.currentTimeMillis()
         val oRnd = Random(lSeed)
-        var sHex: String?
         val sUUID = StringBuffer(32)
-        var localIPAddr = ByteArray(4)
+        var sHex: String?
+        var localIPAddr: ByteArray
 
         try {
             // 8 characters Code IP address of this machine
@@ -97,7 +96,7 @@ class Uid {
         if (iSequence >= 16777000) iSequence = 1048576
 
         do {
-            iRnd = oRnd.nextInt()
+            var iRnd = oRnd.nextInt()
             if (iRnd > 0) iRnd = -iRnd
             sHex = Lng.toHexString(iRnd)
         } while (0 == iRnd)

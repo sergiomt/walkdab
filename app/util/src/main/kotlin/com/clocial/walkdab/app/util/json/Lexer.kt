@@ -8,8 +8,11 @@ class Lexer {
         // Implement these if you wish to write your own Parser, or
         // use the JSON class, which is also a good place to look at
         // an example of how to extend CB
-        abstract fun tok(tok: LexerToken)
+
+        abstract fun tok(t: LexerToken)
+
         abstract fun tok(s: String?)
+
         abstract fun tok(s: BigDecimal?)
 
         // these are to for internal use only, for the lexer to

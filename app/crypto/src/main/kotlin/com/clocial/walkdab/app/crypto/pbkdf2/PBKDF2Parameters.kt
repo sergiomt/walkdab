@@ -109,7 +109,7 @@ class PBKDF2Parameters {
         this.hashAlgorithmStr = hashAlgorithm
     }
 
-    fun getHashCharset(): String {
+    fun getHashCharset(): String? {
         return hashCharsetStr
     }
 

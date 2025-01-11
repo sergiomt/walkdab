@@ -58,14 +58,16 @@ object BinTools {
      * @throws IllegalArgumentException
      * when string contains non-hex character
      */
-    fun hex2bin(s: String): ByteArray {
-        var m = s
+    fun hex2bin(s: String?): ByteArray {
+        var m: String
         if (s == null) {
             // Allow empty input string.
             m = ""
-        } else if (s.length % 2 !== 0) {
+        } else if (s.length % 2 != 0) {
             // Assume leading zero for odd string length
-            m = "0" + s
+            m = "0$s"
+        } else {
+            m = s
         }
         val r = ByteArray(m.length / 2)
         var i = 0
@@ -89,32 +91,16 @@ object BinTools {
      * on non-hex character
      */
     fun hex2bin(c: Char): Int {
-        if (c >= '0' && c <= '9') {
+        if (c in '0'..'9') {
             return (c.code - '0'.code)
         }
-        if (c >= 'A' && c <= 'F') {
+        if (c in 'A'..'F') {
             return (c.code - 'A'.code + 10)
         }
-        if (c >= 'a' && c <= 'f') {
+        if (c in 'a'..'f') {
             return (c.code - 'a'.code + 10)
         }
-        throw IllegalArgumentException(
-            "Input string may only contain hex digits, but found '" + c
-                    + "'"
-        )
+        throw IllegalArgumentException("Input string may only contain hex digits, but found '$c'")
     }
 
-    fun main(args: Array<String?>?) {
-        val b = ByteArray(256)
-        var bb: Byte = 0
-        for (i in 0..255) {
-            b[i] = bb++
-        }
-        val s = bin2hex(b)
-        val c = hex2bin(s)
-        val t = bin2hex(c)
-        if (!s.equals(t)) {
-            throw AssertionError("Mismatch")
-        }
-    }
 }

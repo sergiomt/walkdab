@@ -21,31 +21,30 @@
 package com.clocial.walkdab.app.crypto.pbkdf2
 
 /**
- * Interface to **Pseudorandom Function**.
+ * Interface to Pseudorandom Function.
  *
  * @see [RFC 2898](http://tools.ietf.org/html/rfc2898)
  *
- * @author Matthias Grtner
+ * @author Matthias Gartner
  */
 interface PRF {
     /**
      * Initialize this instance with the user-supplied password.
      *
-     * @param P
+     * @param secret
      * The password supplied as array of bytes. It is the caller's
      * task to convert String passwords to bytes as appropriate.
      */
-    open fun init(P: ByteArray)
+    open fun init(secret: ByteArray)
 
     /**
      * Pseudo Random Function
      *
-     * @param M
-     * Input data/message etc. Together with any data supplied during
-     * initilization.
+     * @param input
+     * Input data/message etc. Together with any data supplied during initilization.
      * @return Random bytes of hLen length.
      */
-    open fun doFinal(M: ByteArray): ByteArray
+    open fun doFinal(input: ByteArray): ByteArray
 
     /**
      * Query block size of underlying algorithm/mechanism.

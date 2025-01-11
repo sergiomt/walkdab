@@ -7,10 +7,7 @@ import java.time.ZoneId
 import com.clocial.walkdab.app.enums.locale.ISO3166CountryCode
 import com.clocial.walkdab.app.enums.security.SignatureType
 import com.clocial.walkdab.app.models.snippets.Signature
-import com.clocial.walkdab.app.util.str.Str.ETX
-import com.clocial.walkdab.app.util.str.Str.FF
-import com.clocial.walkdab.app.util.str.Str.STX
-import com.clocial.walkdab.app.util.str.Str.removeChars
+import com.clocial.walkdab.app.util.str.Str.sanitizeBreaks
 
 class SignaturePojo : Signature {
 
@@ -28,7 +25,7 @@ class SignaturePojo : Signature {
     }
 
     fun setPartyId(partyId: String?) {
-        this.partyId = sanitize(partyId)
+        this.partyId = sanitizeBreaks(partyId)
     }
 
     override fun getPartyRole(): String? {
@@ -36,7 +33,7 @@ class SignaturePojo : Signature {
     }
 
     fun setPartyRole(partyRole: String?) {
-        this.partyRole = sanitize(partyRole)
+        this.partyRole = sanitizeBreaks(partyRole)
     }
 
     override fun getAuthorityCountry(): ISO3166CountryCode? {
@@ -52,7 +49,7 @@ class SignaturePojo : Signature {
     }
 
     fun setAuthorityName(authorityName: String?) {
-        this.authorityName = sanitize(authorityName)
+        this.authorityName = sanitizeBreaks(authorityName)
     }
 
     override fun getAuthorityOrganisation(): String? {
@@ -60,7 +57,7 @@ class SignaturePojo : Signature {
     }
 
     fun setAuthorityOrganisation(authorityOrganisation: String?) {
-        this.authorityOrganisation = sanitize(authorityOrganisation)
+        this.authorityOrganisation = sanitizeBreaks(authorityOrganisation)
     }
 
     override fun getTimestamp(): LocalDateTime? {
@@ -114,16 +111,6 @@ class SignaturePojo : Signature {
         }
         sb.append("}")
         return sb.toString()
-    }
-
-    private fun sanitize(value: String?): String {
-        return if (value.isNullOrEmpty()) {
-            ""
-        } else {
-            val noBreaks = removeChars(value, "\"\r" + FF + STX + ETX)
-            val noBreaksNonNull = noBreaks ?: ""
-            noBreaksNonNull.replace('\n', ' ')
-        }
     }
 
     private fun jsonField(name: String, value: String?): String {

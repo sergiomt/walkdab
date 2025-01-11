@@ -247,7 +247,7 @@ class JSON {
         }
 
         fun jsonifyCustom(o: Any, enc: CustomEncoder): String {
-            enc.encode(o)
+            enc.encodeCustom(o)
             return enc.buf.toString()
         }
     }

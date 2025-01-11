@@ -128,18 +128,18 @@ object BaseA64 {
         var i = 0
         while (i < len) {
             val pos = off + i
-            val one = REFERENCE[text[pos].toInt()]
-            val two = REFERENCE[text[pos + 1].toInt()]
+            val one = REFERENCE[text[pos].code]
+            val two = REFERENCE[text[pos + 1].code]
             buf[index++] = (one shl 2 or (two shr 4) and mask).toByte()
             if (index >= buf.size) {
                 return buf
             }
-            val three = REFERENCE[text[pos + 2].toInt()]
+            val three = REFERENCE[text[pos + 2].code]
             buf[index++] = (two shl 4 or (three shr 2) and mask).toByte()
             if (index >= buf.size) {
                 return buf
             }
-            val four = REFERENCE[text[pos + 3].toInt()]
+            val four = REFERENCE[text[pos + 3].code]
             buf[index++] = (three shl 6 or four and mask).toByte()
             i += 4
         }

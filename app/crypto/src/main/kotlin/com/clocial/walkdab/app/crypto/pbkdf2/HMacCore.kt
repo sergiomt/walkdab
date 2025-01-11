@@ -30,7 +30,7 @@ package com.clocial.walkdab.app.crypto.pbkdf2
  * <MD> can be SHA1 or MD5, etc. See RFC 2104 for spec.
  *
  * @author Jan Luehe
-</MD></MD> */
+*/
 internal class HMacCore : Cloneable {
     private val md: MsgDigest
     private val k_ipad: ByteArray? // inner padding - key XORd with ipad
@@ -80,13 +80,13 @@ internal class HMacCore : Cloneable {
     /**
      * Initializes the HMAC with the given secret key and algorithm parameters.
      *
-     * @param secret the secret key.
+     * @param secretKey the secret key.
      */
-    fun init(secret: ByteArray) {
+    fun init(secretKey: ByteArray) {
         // if key is longer than the block length, reset it using
         // the message digest object.
 
-        var secret = secret
+        var secret = secretKey
         if (secret.size > blockLen) {
             val tmp: ByteArray = md.digest(secret)
             // now erase the secret

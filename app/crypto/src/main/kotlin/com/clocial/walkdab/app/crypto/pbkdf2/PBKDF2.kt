@@ -34,7 +34,7 @@ interface PBKDF2 {
      * Candidate password to compute the derived key for.
      * @return internal byte array
      */
-    fun deriveKey(inputPassword: String): ByteArray
+    fun deriveKey(inputPassword: String?): ByteArray
 
     /**
      * Convert String-based input to internal byte array, then invoke PBKDF2.
@@ -45,7 +45,7 @@ interface PBKDF2 {
      * Specify desired key length
      * @return internal byte array
      */
-    fun deriveKey(inputPassword: String, dkLen: Int): ByteArray
+    fun deriveKey(inputPassword: String?, dkLen: Int): ByteArray
 
     /**
      * Convert String-based input to internal byte arrays, then invoke PBKDF2

@@ -2,14 +2,16 @@ package com.clocial.walkdab.app.pojos
 
 import com.clocial.walkdab.app.models.forms.Form
 import com.clocial.walkdab.app.models.forms.Tab
+import com.clocial.walkdab.app.models.forms.Tagged
 import com.clocial.walkdab.app.models.snippets.Signature
+import com.clocial.walkdab.app.models.snippets.Signed
 
-open class FormPojo : AbstractAuditableDeletableGuidPojo(), Form {
+open class FormPojo : AbstractAuditableDeletableGuidPojo(), Form, Signed, Tagged {
 
     private var formTenantId: String
     private var formName: String
     private var formSignature: Signature? = null
-    private var formTabs: MutableList<Tab>
+    private var formTabs: MutableList<TabPojo>
     private val formTags: MutableSet<String>
 
     init {
@@ -21,7 +23,15 @@ open class FormPojo : AbstractAuditableDeletableGuidPojo(), Form {
     }
 
     final override fun addTab(newTab: Tab) {
-        formTabs.add(newTab)
+        if (newTab is TabPojo) {
+            formTabs.add(newTab)
+        } else {
+            val t = TabPojo()
+            t.setId(newTab.getId())
+            t.setFormId(newTab.getFormId())
+            t.setName(newTab.getName())
+            newTab.getFields().forEach { f -> t.add(f) }
+        }
     }
 
     final override fun removeTab(tabId: String) {
@@ -41,11 +51,11 @@ open class FormPojo : AbstractAuditableDeletableGuidPojo(), Form {
         formTabs.removeAt(index)
     }
 
-    final override fun getTabs(): List<Tab> {
+    final override fun getTabs(): List<TabPojo> {
         return formTabs
     }
 
-    final override fun getFirstTab(): Tab {
+    final override fun getFirstTab(): TabPojo {
         return formTabs[0]
     }
 

@@ -2,8 +2,10 @@ package com.clocial.walkdab.app.util.json
 
 import java.time.LocalDate
 import java.time.LocalDateTime
-import kotlin.collections.List
+
+import kotlin.collections.Collection
 import kotlin.collections.Map
+import kotlin.collections.Set
 
 open class Encoder {
     var buf: StringBuilder = StringBuilder()
@@ -37,9 +39,11 @@ open class Encoder {
             return
         }
         if (o is Map<*, *>) {
-            encode(o)
-        } else if (o is List<*>) {
-            encode(o)
+            encode(buf, o)
+        } else if (o is Collection<*>) {
+            encode(buf, o)
+        } else if (o is Set<*>) {
+            encode(buf, o)
         } else if (o is Number) {
             encode(buf, o)
         } else if (o is CharSequence) {
@@ -64,10 +68,10 @@ open class Encoder {
     }
 
     fun eggsplod(o: Any) {
-        throw RuntimeException("JSON encoder cannot handle class " + o.toString())
+        throw RuntimeException("JSON encoder cannot handle class $o")
     }
 
-    fun encode(m: Map<*, *>) {
+    fun encode(buf: StringBuilder, m: Map<*, *>) {
         checkCircular(m)
         buf.append('{')
         for (k in m.keys) {
@@ -80,26 +84,9 @@ open class Encoder {
         buf.setCharAt(buf.length - 1, '}')
     }
 
-    fun encode(l: List<*>) {
-        checkCircular(l)
-        buf.append('[')
-        for (k in l) {
-            encode(k)
-            buf.append(",")
-        }
-        buf.setCharAt(buf.length - 1, ']')
-    }
-
     fun encodeArray(arr: Array<Any>) {
         checkCircular(arr)
-        buf.append('[')
-        val l = arr.size
-        var i = 0
-        while (i < l) {
-            encode(arr[i++])
-            buf.append(",")
-        }
-        buf.setCharAt(buf.length - 1, ']')
+        encode(buf, arr)
     }
 
     fun checkCircular(m: Any) {
@@ -185,6 +172,53 @@ open class Encoder {
 
         fun encode(buf: StringBuilder, c: Char) {
             buf.append(c.code)
+        }
+
+        fun encode(buf: StringBuilder, items: Array<Any>) {
+            val quotedItems = mutableListOf<String>()
+            for (i in items) {
+                if (i == null) {
+                    quotedItems.add("null")
+                } else if (i is String) {
+                    quotedItems.add("\"" + i + "\"")
+                } else {
+                    quotedItems.add(i.toString());
+                }
+            }
+            buf.append("[")
+            buf.append(quotedItems.joinToString())
+            buf.append("]")
+        }
+
+        fun encode(buf: StringBuilder, items: Set<*>) {
+            val quotedItems = mutableListOf<String>()
+            for (i in items) {
+                if (i == null) {
+                    quotedItems.add("null")
+                } else if (i is String) {
+                    quotedItems.add("\"" + i + "\"")
+                } else {
+                    quotedItems.add(i.toString());
+                }
+            }
+            buf.append("[")
+            buf.append(quotedItems.joinToString())
+            buf.append("]")
+        }
+        fun encode(buf: StringBuilder, items: Collection<*>) {
+            val quotedItems = mutableListOf<String>()
+            for (i in items) {
+                if (i == null) {
+                    quotedItems.add("null")
+                } else if (i is String) {
+                    quotedItems.add("\"" + i + "\"")
+                } else {
+                    quotedItems.add(i.toString());
+                }
+            }
+            buf.append("[")
+            buf.append(quotedItems.joinToString())
+            buf.append("]")
         }
     }
 }

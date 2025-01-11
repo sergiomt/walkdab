@@ -23,7 +23,7 @@ package com.clocial.walkdab.app.crypto.pbkdf2
 /**
  * Default PRF implementation based on standard javax.crypt.Mac mechanisms.
  *
- * @author Matthias Grtner
+ * @author Matthias Gartner
  */
 class MacBasedPRF() : PRF {
 

@@ -22,25 +22,14 @@ package com.clocial.walkdab.app.crypto.pbkdf2
 
 /**
  * This **Password Based Key Derivation Function 2** implementation.
- * <hr></hr>
  * Request for Comments: 2898 PKCS #5: Password-Based Cryptography Specification
  *
- *
- * Version 2.0
- *
- *
- *
  * PBKDF2 (P, S, c, dkLen)
- *
- *
  *
  * Options:
  *
  *  * PRF underlying pseudorandom function (hLen denotes the length in octets
  * of the pseudorandom function output). PRF is pluggable.
- *
- *
- *
  *
  * Input:
  *
@@ -51,16 +40,14 @@ package com.clocial.walkdab.app.crypto.pbkdf2
  * at most (2^32 - 1) * hLen
  *
  *
- *
- *
  * Output:
  *
  *  * DK derived key, a dkLen-octet string
  *
- *
  * @see [RFC 2898](http://tools.ietf.org/html/rfc2898)
  *
- * @author Matthias Grtner
+ * @author Matthias Gartner
+ * @version 2.0
  */
 open class PBKDF2Base : PBKDF2 {
 
@@ -74,47 +61,37 @@ open class PBKDF2Base : PBKDF2 {
      * and String encoding.
      *
      * @param parameters
-     * Data holder for iteration count, method to use et cetera.
+     * Data holder for iteration count, method to use etc.
      */
     constructor(params: PBKDF2Parameters) {
         pbkdf2params = params
         prf = MacBasedPRF()
     }
 
-    override fun deriveKey(inputPassword: String): ByteArray {
+    override fun deriveKey(inputPassword: String?): ByteArray {
         return deriveKey(inputPassword, 0)
     }
 
-    override fun deriveKey(inputPassword: String, dkLen: Int): ByteArray {
-        var inputPassword = inputPassword
-        var dkLen = dkLen
-        var r: ByteArray? = null
-        var P: ByteArray? = null
-        val charset: String = pbkdf2params.getHashCharset()
-        if (inputPassword == null) {
-            inputPassword = ""
-        }
-
-        if (charset == null) {
-            P = inputPassword.toByteArray(Charsets.UTF_8)
-        } else {
-            P = inputPassword.toByteArray(Charsets.UTF_8)
-        }
-
-        prf.init(P)
-        if (dkLen == 0) {
-            dkLen = prf.getHLen()
-        }
-        r = PBKDF2(
-            prf, pbkdf2params.getSalt(), pbkdf2params.getIterationCount(),
-            dkLen
+    override fun deriveKey(inputPassword: String?, dkLen: Int): ByteArray {
+        var inputPsswrd = inputPassword ?: ""
+        var psswrdLen: Int
+        val chrSet: String? = pbkdf2params.getHashCharset()
+        val p = inputPsswrd.toByteArray(
+            if (chrSet == null) {Charsets.UTF_8} else {charset(chrSet)}
         )
+        prf.init(p)
+        if (dkLen == 0) {
+            psswrdLen = prf.getHLen()
+        } else {
+            psswrdLen = dkLen
+        }
+        val r = PBKDF2(prf, pbkdf2params.getSalt(), pbkdf2params.getIterationCount(), psswrdLen)
         return r
     }
 
     override fun verifyKey(inputPassword: String): Boolean {
         val referenceKey: ByteArray = getParameters().getDerivedKey()
-        if (referenceKey == null || referenceKey.size == 0) {
+        if (referenceKey == null || referenceKey.isEmpty()) {
             return false
         }
         val inputKey = deriveKey(inputPassword, referenceKey.size)
@@ -149,27 +126,29 @@ open class PBKDF2Base : PBKDF2 {
      * desired length of derived key.
      * @return internal byte array
      */
-    protected fun PBKDF2(prf: PRF, S: ByteArray?, c: Int, dkLen: Int): ByteArray {
-        var S = S
+    private fun PBKDF2(prf: PRF, S: ByteArray?, c: Int, dkLen: Int): ByteArray {
+        var s: ByteArray
         if (S == null) {
-            S = ByteArray(0)
+            s = ByteArray(0)
+        } else {
+            s = S
         }
         val hLen: Int = prf.getHLen()
         val l = ceil(dkLen, hLen)
         val r = dkLen - (l - 1) * hLen
-        val T = ByteArray(l * hLen)
-        var ti_offset = 0
+        val t = ByteArray(l * hLen)
+        var tiOffset = 0
         for (i in 1..l) {
-            _F(T, ti_offset, prf, S, c, i)
-            ti_offset += hLen
+            _F(t, tiOffset, prf, s, c, i)
+            tiOffset += hLen
         }
         if (r < hLen) {
             // Incomplete last block
-            val DK = ByteArray(dkLen)
-            System.arraycopy(T, 0, DK, 0, dkLen)
-            return DK
+            val dk = ByteArray(dkLen)
+            System.arraycopy(t, 0, dk, 0, dkLen)
+            return dk
         }
-        return T
+        return t
     }
 
     /**
@@ -231,9 +210,9 @@ open class PBKDF2Base : PBKDF2 {
      * @param dest destination byte buffer
      * @param src source bytes
      */
-    protected fun xor(dest: ByteArray, src: ByteArray) {
+    private fun xor(dest: ByteArray, src: ByteArray) {
         for (i in dest.indices) {
-            dest.set(i, (dest.get(i).toInt() xor src.get(i).toInt()).toByte())
+            dest.set(i, (dest[i].toInt() xor src[i].toInt()).toByte())
         }
     }
 
@@ -246,11 +225,11 @@ open class PBKDF2Base : PBKDF2 {
      * @param offset zero-based offset into dest
      * @param i the integer to encode
      */
-    protected fun INT(dest: ByteArray, offset: Int, i: Int) {
-        dest.set(offset + 0, (i / (256 * 256 * 256)).toByte())
-        dest.set(offset + 1, (i / (256 * 256)).toByte())
-        dest.set(offset + 2, (i / (256)).toByte())
-        dest.set(offset + 3, i.toByte())
+    private fun INT(dest: ByteArray, offset: Int, i: Int) {
+        dest[offset + 0] = (i / (256 * 256 * 256)).toByte()
+        dest[offset + 1] = (i / (256 * 256)).toByte()
+        dest[offset + 2] = (i / (256)).toByte()
+        dest[offset + 3] = i.toByte()
     }
 
     override fun getParameters(): PBKDF2Parameters {

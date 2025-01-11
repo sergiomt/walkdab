@@ -42,9 +42,7 @@ internal class SHA2Impl (
      */
     override fun implReset() {
         resetHashes()
-        if (W != null) {
-            W.fill(0)
-        }
+        W.fill(0)
     }
 
     private fun resetHashes() {
@@ -89,9 +87,6 @@ internal class SHA2Impl (
     // offset 'ofs') and not on array 'W', therefore 'buf' and 'ofs'
     // must be passed as parameter to the method.
     private fun implCompress0(buf: ByteArray, ofs: Int) {
-        if (W == null) {
-            W = IntArray(64)
-        }
         b2iBig64(buf, ofs, W)
         // The first 16 ints are from the byte stream, compute the rest of
         // the W[]'s

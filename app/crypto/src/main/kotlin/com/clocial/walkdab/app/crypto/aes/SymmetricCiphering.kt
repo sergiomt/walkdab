@@ -7,9 +7,9 @@ interface SymmetricCiphering {
     open fun getBlockSize(): Int
 
     @Throws(IllegalArgumentException::class)
-    open fun init(decrypting: Boolean, key: ByteArray)
+    fun init(decrypting: Boolean, key: ByteArray)
 
-    open fun encryptBlock(input: ByteArray, inOffset: Int, output: ByteArray, outOffset: Int)
+    fun encryptBlock(input: ByteArray, inOff: Int, output: ByteArray, outOff: Int)
 
-    open fun decryptBlock(input: ByteArray, inOffset: Int, output: ByteArray, outOffset: Int)
+    fun decryptBlock(input: ByteArray, inOff: Int, output: ByteArray, outOff: Int)
 }

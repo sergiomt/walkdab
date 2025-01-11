@@ -6,13 +6,13 @@ import java.time.LocalDateTime
 
 abstract class AbstractAuditablePojo : Auditable, AbstractKeyValuePojo() {
 
-    private var createdOnDateTime: LocalDateTime? = null
+    protected var createdOnDateTime: LocalDateTime? = null
 
-    private var createdByUser: String? = null
+    protected var createdByUser: String? = null
 
-    private var updatedOnDateTime: LocalDateTime? = null
+    protected var updatedOnDateTime: LocalDateTime? = null
 
-    private var updatedByUser: String? = null
+    protected var updatedByUser: String? = null
 
     override fun getCreatedOn(): LocalDateTime? = createdOnDateTime
 

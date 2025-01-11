@@ -33,16 +33,16 @@ package com.clocial.walkdab.app.crypto.pbkdf2
  *  1. derived key bytes
  *
  *
- * @author Matthias Grtner
+ * @author Matthias Gartner
  */
 class PBKDF2HexFormatter {
-    fun fromString(p: PBKDF2Parameters, s: String): Boolean {
+    fun fromString(p: PBKDF2Parameters?, s: String?): Boolean {
         if (p == null || s == null) {
             return true
         }
 
         val p123 = s.split(":")
-        if (p123 == null || p123.size != 3) {
+        if (p123.size != 3) {
             return true
         }
 

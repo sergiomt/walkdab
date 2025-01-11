@@ -63,12 +63,12 @@ class CurrencyCode (
      * @return boolean
      */
     fun equals(oCurCod: CurrencyCode): Boolean {
-        return if (sAlphaCode == null || oCurCod.alphaCode() == null) false else sAlphaCode == oCurCod.alphaCode()
+        return if (oCurCod.alphaCode() == null) false else sAlphaCode == oCurCod.alphaCode()
     }
 
     //---------------------------------------------------------------------------
     override fun hashCode(): Int {
-        return sAlphaCode?.hashCode() ?: 0
+        return sAlphaCode.hashCode() ?: 0
     }
     // ---------------------------------------------------------------------------
     /**

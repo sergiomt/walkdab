@@ -109,7 +109,8 @@ class PBKDF2Impl (saltSizeBytes: Int,
         if (p!=null) {
             val q = PBKDF2Parameters()
             q.setHashAlgorithm(p.getHashAlgorithm())
-            q.setHashCharset(p.getHashCharset())
+            var chrSet = p.getHashCharset() ?: "UTF-8"
+            q.setHashCharset(chrSet)
             var verifyOK = false
             if (!getFormatter().fromString(q, formatted)) {
                 try {
