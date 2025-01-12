@@ -1,15 +1,10 @@
 package com.clocial.walkdab.app.models.forms
 
-import com.clocial.walkdab.app.models.snippets.Auditable
-import com.clocial.walkdab.app.models.snippets.GloballyUnique
-import com.clocial.walkdab.app.models.snippets.Deletable
-import com.clocial.walkdab.app.models.snippets.MultiTenant
-import com.clocial.walkdab.app.models.snippets.Named
-import com.clocial.walkdab.app.models.snippets.Signed
+import com.clocial.walkdab.app.models.snippets.*
 
 import java.io.Serializable
 
-interface Form : Auditable, Deletable, GloballyUnique, MultiTenant, Named, Signed, Serializable, Tagged {
+interface Form : Auditable, Deletable, GloballyUnique, Identifiable, MultiTenant, Named, Signed, Serializable, Tagged {
 
     fun getTabs(): List<Tab>
 
@@ -18,6 +13,8 @@ interface Form : Auditable, Deletable, GloballyUnique, MultiTenant, Named, Signe
     fun getFirstTab(): Tab
 
     fun removeTab(tabId: String)
+
+    fun removeTab(tabIndex: Int)
 
     fun addGeneralTag(tagGuid: String)
 

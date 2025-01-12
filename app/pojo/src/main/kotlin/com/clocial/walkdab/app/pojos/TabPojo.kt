@@ -41,6 +41,10 @@ open class TabPojo : AbstractAuditablePojo, Tab {
         return tabFields
     }
 
+    override fun getFieldByName(fieldName: String): Field? {
+        return tabFields.find { f -> f.getName() == fieldName }
+    }
+
     override fun add(field: Field): Boolean {
         if (field.getId().isEmpty())
             return addWithNextId(field)

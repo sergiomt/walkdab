@@ -11,7 +11,7 @@ class SignaturePojoJsonEncoder: JsonEncoderPojo(), CustomEncoder.Encoder<Signatu
     override fun decode(nameValueMap: Map<String, Any>): SignaturePojo {
         val sig = SignaturePojo();
         nameValueMap.keys.forEach {
-            val keyVal = nameValueMap[it]
+            val keyVal = nil(nameValueMap[it])
             when (it) {
                 "partyId" -> keyVal?.let { it1 -> sig.setPartyId(it1 as String) }
                 "partyRole" -> keyVal?.let { it1 -> sig.setPartyRole(it1 as String) }

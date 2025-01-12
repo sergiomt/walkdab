@@ -51,6 +51,10 @@ open class FormPojo : AbstractAuditableDeletableGuidPojo(), Form, Signed, Tagged
         formTabs.removeAt(index)
     }
 
+    final override fun removeTab(tabIndex: Int) {
+        formTabs.removeAt(0)
+    }
+
     final override fun getTabs(): List<TabPojo> {
         return formTabs
     }

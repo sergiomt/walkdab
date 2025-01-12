@@ -3,6 +3,7 @@ package com.clocial.walkdab.app.io.pojos
 import com.clocial.walkdab.app.models.forms.Tab
 import com.clocial.walkdab.app.pojos.TabPojo
 import com.clocial.walkdab.app.util.json.CustomEncoder
+import com.clocial.walkdab.app.util.time.TimeHelper.parseCompactTimestamp
 import java.time.LocalDateTime
 
 class TabPojoJsonEncoder: JsonEncoderPojo(), CustomEncoder.Encoder<TabPojo> {
@@ -16,14 +17,14 @@ class TabPojoJsonEncoder: JsonEncoderPojo(), CustomEncoder.Encoder<TabPojo> {
             f -> tab.add(f)
         }
         nameValueMap.keys.forEach {
-            val keyVal = nameValueMap[it]
+            val keyVal = nil(nameValueMap[it])
             when (it) {
                 "tabId" -> tab.setId(keyVal as String)
                 "tabName" -> keyVal?.let { it1 -> tab.setName(it1 as String) }
                 "formId" -> keyVal?.let { it1 -> tab.setFormId(it1 as String) }
-                "createdOn" -> keyVal?.let { it1 -> tab.setCreatedOn(LocalDateTime.parse(it1 as String)) }
+                "createdOn" -> keyVal?.let { it1 -> tab.setCreatedOn(parseCompactTimestamp(it1 as String)) }
                 "createdBy" -> keyVal?.let { it1 -> tab.setCreatedBy(it1 as String) }
-                "updatedOn" -> keyVal?.let { it1 -> tab.setUpdatedOn(LocalDateTime.parse(it1 as String)) }
+                "updatedOn" -> keyVal?.let { it1 -> tab.setUpdatedOn(parseCompactTimestamp(it1 as String)) }
                 "updatedBy" -> keyVal?.let { it1 -> tab.setUpdatedBy(it1 as String) }
             }
         }

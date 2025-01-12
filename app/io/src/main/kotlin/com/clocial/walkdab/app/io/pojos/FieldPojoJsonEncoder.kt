@@ -1,6 +1,9 @@
 package com.clocial.walkdab.app.io.pojos
 
 import com.clocial.walkdab.app.models.forms.Field
+import com.clocial.walkdab.app.models.forms.FieldValue
+import com.clocial.walkdab.app.models.forms.FieldValueNull
+import com.clocial.walkdab.app.models.forms.FieldValuePassword
 import com.clocial.walkdab.app.pojos.*
 import com.clocial.walkdab.app.util.json.CustomEncoder
 import com.clocial.walkdab.app.util.time.TimeHelper.parseCompactTimestamp
@@ -13,7 +16,11 @@ class FieldPojoJsonEncoder: JsonEncoderPojo(), CustomEncoder.Encoder<FieldPojo> 
         encodeNextNameValue (builder, "fieldName", f.getName())
         encodeNextNameValue (builder, "fieldOptional", f.isOptional())
         encodeNextNameValue (builder, "fieldNullable", f.isNullable())
-        encodeNextNameValue (builder, "fieldType", f.javaClass.simpleName)
+        if (null!=f.getValue()) {
+            encodeNextNameValue (builder, "fieldType", f.getValue()!!.javaClass.simpleName)
+        } else {
+            encodeNextNameValue (builder, "fieldType", FieldValueStringPojo::class.simpleName)
+        }
         encodeNextNameValue (builder, "fieldValue", f.getValue())
         encodeNextNameValue (builder, "createdOn", f.getCreatedOn())
         encodeNextNameValue (builder, "createdBy", f.getCreatedBy())
@@ -28,11 +35,13 @@ class FieldPojoJsonEncoder: JsonEncoderPojo(), CustomEncoder.Encoder<FieldPojo> 
             FieldValueBooleanPojo::class.simpleName -> fld.setValue(FieldValueBooleanPojo(fldVal as Boolean))
             FieldValueStringPojo::class.simpleName -> fld.setValue(FieldValueStringPojo(fldVal as String))
             FieldValueDatePojo::class.simpleName -> fld.setValue(FieldValueDatePojo(fldVal as String))
-            FieldValuePasswordPojo::class.simpleName -> fld.setValue(fldVal as String)
-            FieldValueBookmarkPojo::class.simpleName -> fld.setValue(fldVal as String)
+            FieldValuePasswordPojo::class.simpleName -> fld.setValue(getFieldValuePassword(fldVal as String))
+            FieldValueBookmarkPojo::class.simpleName -> fld.setValue(getFieldValueBookmark(fldVal as String))
+            FieldValueBytesPojo::class.simpleName -> fld.setValue(fldVal as String)
+            FieldValueNullPojo::class.simpleName -> fld.setValue(null)
         }
         nameValueMap.keys.forEach {
-            val keyVal = nameValueMap[it]
+            var keyVal = nil(nameValueMap[it])
             when (it) {
                 "fieldId" -> fld.setId(keyVal as String)
                 "fieldName" -> keyVal?.let { it1 -> fld.setName(it1 as String) }
@@ -47,4 +56,14 @@ class FieldPojoJsonEncoder: JsonEncoderPojo(), CustomEncoder.Encoder<FieldPojo> 
         return fld
     }
 
+    private fun getFieldValueBookmark(strRepresentation: String): FieldValue {
+        val bookmarkVal = FieldValueBookmarkPojo()
+        bookmarkVal.setFromString(strRepresentation)
+        return bookmarkVal
+    }
+    private fun getFieldValuePassword(strRepresentation: String): FieldValue {
+        val psswrdVal = FieldValuePasswordPojo()
+        psswrdVal.setFromString(strRepresentation)
+        return psswrdVal
+    }
 }

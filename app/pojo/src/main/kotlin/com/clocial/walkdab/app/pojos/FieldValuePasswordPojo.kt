@@ -79,7 +79,7 @@ class FieldValuePasswordPojo : FieldValuePassword, Serializable {
         if (txPasswrd.isEmpty()) {
             return ""
         }
-        val encodedPsswrd = BaseA64.encode(txPasswrd.toByteArray(Charsets.UTF_8)).contentToString()
+        val encodedPsswrd = String(BaseA64.encode(txPasswrd.toByteArray(Charsets.UTF_8)))
         return if (expiration==null) encodedPsswrd else encodedPsswrd + ";" + formatCompactTimestamp(expiration)
     }
 

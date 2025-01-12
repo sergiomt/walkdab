@@ -4,6 +4,7 @@ import com.clocial.walkdab.app.models.forms.Field
 import com.clocial.walkdab.app.models.forms.FormsFactory
 import java.io.Serializable
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 open class FormsFactoryPojo: FormsFactory {
     override fun createForm(): FormPojo {
@@ -30,8 +31,18 @@ open class FormsFactoryPojo: FormsFactory {
         return createGenericField(fieldName, FieldValueDatePojo(fieldValue))
     }
 
+    override fun createField(fieldName: String,  fieldValue: ByteArray): Field {
+        return createGenericField(fieldName, FieldValueBytesPojo(fieldValue))
+    }
+
+    override fun createField(fieldName: String, fieldValue: String, title: String): Field {
+        return createGenericField(fieldName, FieldValueBookmarkPojo(title, fieldValue))
+    }
+    override fun createField(fieldName: String, fieldValue: String, expiration: LocalDateTime?): Field {
+        return createGenericField(fieldName, FieldValuePasswordPojo(fieldValue, expiration))
+    }
     private fun createGenericField(fieldName: String, fieldValue: Serializable?): FieldPojo {
-        val newField = FieldPojo()
+        var newField = FieldPojo()
         newField.setName(fieldName)
         newField.setValue(fieldValue)
         return newField;

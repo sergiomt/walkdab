@@ -7,13 +7,15 @@ import com.clocial.walkdab.app.util.time.TimeHelper.parseCompactTimestamp
 class FormPojoJsonEncoder : JsonEncoderPojo(), CustomEncoder.Encoder<FormPojo> {
 
     private val tabEncoder: TabPojoJsonEncoder = TabPojoJsonEncoder()
-    override fun decode(nameValueMap: Map<String, Any>): Any {
+    override fun decode(nameValueMap: Map<String, Any>): FormPojo {
         val frm = FormPojo();
-        val frmTabsList = nameValueMap["frmTabs"] as List<Map<String, Any>>
+        frm.removeTab(0)
+
+        val frmTabsList = nameValueMap["formTabs"] as List<Map<String, Any>>
         frmTabsList.map { j -> tabEncoder.decode(j) }.forEach { k -> frm.addTab(k) }
 
         nameValueMap.keys.forEach {
-            val keyVal = nameValueMap[it]
+            val keyVal = nil(nameValueMap[it])
             when (it) {
                 "formKey" -> keyVal?.let { it1 -> frm.setKey(it1 as String) }
                 "formTenantId" -> keyVal?.let { it1 -> frm.setTenantId(it1 as String) }
@@ -30,7 +32,7 @@ class FormPojoJsonEncoder : JsonEncoderPojo(), CustomEncoder.Encoder<FormPojo> {
     override fun encode(builder: StringBuilder, r: Any?) {
         val f = r as Form
         encodeFirstNameValue(builder, "formKey", f.getKey())
-        encodeFirstNameValue(builder, "formTenantId", f.getId())
+        encodeNextNameValue (builder, "formTenantId", f.getTenantId())
         encodeNextNameValue (builder, "formName", f.getName())
         encodeNextNameValue (builder, "formSignature", f.getSignature())
         encodeNextNameValue (builder, "createdOn", f.getCreatedOn())

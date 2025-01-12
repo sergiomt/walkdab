@@ -16,6 +16,8 @@ interface Tab : Auditable, Identifiable, Named, Serializable {
 
     fun getFields(): List<Field>
 
+    fun getFieldByName(fieldName: String): Field?
+
     fun add(field: Field): Boolean
 
     fun addOrReplace(field: Field): Int

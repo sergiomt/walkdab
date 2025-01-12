@@ -31,7 +31,7 @@ object Str {
      */
     fun chomp(sSource: String?, sEndsWith: String): String? {
         return if (null == sSource) null
-        else if (sSource.length == 0) ""
+        else if (sSource.isEmpty()) ""
         else if (sSource.endsWith(sEndsWith)) sSource
         else sSource + sEndsWith
     } // chomp
@@ -297,6 +297,28 @@ object Str {
         aPad.fill(cPad)
 
         return String(aPad) + sSource
+    } // leftPad
+
+    /**
+     * Add padding characters to the right.
+     * @param sSource Input String
+     * @param cPad Padding character
+     * @param nChars Final length of the padded string
+     * @return Padded String
+     */
+    @JvmStatic
+    fun rightPad(sSource: String?, cPad: Char, nChars: Int): String? {
+        if (null == sSource) return null
+
+        val iPadLen = nChars - sSource.length
+
+        if (iPadLen <= 0) return sSource
+
+        val aPad = CharArray(iPadLen)
+
+        aPad.fill(cPad)
+
+        return sSource + String(aPad)
     } // leftPad
 
     // ----------------------------------------------------------

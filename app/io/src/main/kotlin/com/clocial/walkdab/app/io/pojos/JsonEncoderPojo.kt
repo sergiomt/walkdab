@@ -3,8 +3,10 @@ package com.clocial.walkdab.app.io.pojos
 import com.clocial.walkdab.app.models.forms.*
 import com.clocial.walkdab.app.models.snippets.Signature
 import com.clocial.walkdab.app.util.json.Encoder
+import com.clocial.walkdab.app.util.json.NullValue
 import com.clocial.walkdab.app.util.time.TimeHelper.formatCompactDate
 import com.clocial.walkdab.app.util.time.TimeHelper.formatCompactTimestamp
+import com.clocial.walkdab.app.pojos.EncodedData
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -41,7 +43,11 @@ abstract class JsonEncoderPojo {
         if (fieldValue==null) {
             builder.append('"').append(fieldName).append('"').append(":null")
         } else if (fieldValue is FieldValue) {
-            encodeNameValue(builder, fieldName, fieldValue.getValue())
+            if (fieldValue is FieldValuePassword) {
+                encodeNameValue(builder, fieldName, fieldValue.toString())
+            } else {
+                encodeNameValue(builder, fieldName, fieldValue.getValue())
+            }
         } else {
             builder.append('"').append(fieldName).append('"').append(':')
             if (fieldValue is CharSequence) {
@@ -63,8 +69,16 @@ abstract class JsonEncoderPojo {
                 Encoder.encode(builder, fieldValue)
                 return
             }
+            if (fieldValue is Bookmark) {
+                Encoder.encode(builder, fieldValue.toString())
+                return
+            }
             if (fieldValue is Signature) {
                 Encoder.encode(builder, fieldValue.toString())
+                return
+            }
+            if (fieldValue is ByteArray) {
+                Encoder.encode(builder, EncodedData(fieldValue).toString())
                 return
             }
             if (fieldValue is Set<*>) {
@@ -107,5 +121,14 @@ abstract class JsonEncoderPojo {
             fieldBuilder.setLength(0)
         }
         return "[" + fieldJsons.joinToString() + "]"
+    }
+
+    protected fun nil(it: Any?): Any? {
+        if (null==it)
+            return null
+        else if (it is NullValue)
+            return null
+        else
+            return it
     }
 }
